@@ -7,6 +7,7 @@ import glob
 import os.path
 import time
 from itertools import groupby
+import string
 
 
 #
@@ -19,6 +20,21 @@ from itertools import groupby
 #
 def copy_raw_files_to_input_folder(n):
     """Funcion copy_files"""
+
+    if not os.path.exists("files/input"):
+        os.makedirs("files/input")
+
+    for file in glob.glob("files/raw/*"):
+        for i in range(1, n + 1):
+            with open(file, "r", encoding="utf-8") as f:
+                with open(
+                    f"files/input/{os.path.basename(file).split('.')[0]}_{i}.txt",
+                    "w",
+                    encoding="utf-8",
+                ) as f2:
+                    f2.write(f.read())
+
+
 
 
 #
@@ -37,7 +53,14 @@ def copy_raw_files_to_input_folder(n):
 #   ]
 #
 def load_input(input_directory):
-    """Funcion load_input"""
+    result = []
+    for filename in os.listdir(input_directory):
+        file_path = os.path.join(input_directory, filename)
+        if os.path.isfile(file_path):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    result.append((filename, line.strip()))
+    return result
 
 
 #
@@ -47,6 +70,11 @@ def load_input(input_directory):
 #
 def line_preprocessing(sequence):
     """Line Preprocessing"""
+    sequence = [
+        (key, value.translate(str.maketrans("", "", string.punctuation)).lower())
+        for key, value in sequence
+    ]
+    return sequence
 
 
 #
